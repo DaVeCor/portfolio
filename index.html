@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>David Vellarino - Windows Edition</title>
+  <link rel="stylesheet" href="https://unpkg.com/98.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Fondo de pantalla Bliss -->
+  <div id="desktop-wallpaper"></div>
+
+  <!-- Escritorio con iconos posicionados individualmente para permitir arrastre libre -->
+  <div id="desktop">
+    <div class="desktop-icon draggable-icon" id="icon-about" ondblclick="openWindow('win-about')" style="top: 20px; left: 24px;">
+      <div class="icon-canvas">
+        <svg viewBox="0 0 32 32" class="retro-svg">
+          <rect x="2" y="2" width="28" height="22" rx="2" fill="#d4d0c8" stroke="#000" stroke-width="1.5"/>
+          <rect x="5" y="5" width="22" height="15" fill="#000080"/>
+          <polygon points="7,10 12,12 7,14" fill="#ffffff"/>
+          <line x1="14" y1="14" x2="23" y2="14" stroke="#ffffff" stroke-width="1.5"/>
+          <path d="M10,24 L22,24 L24,28 L8,28 Z" fill="#b0b0b0" stroke="#000" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span>Mi Perfil</span>
+    </div>
+
+    <div class="desktop-icon draggable-icon" id="icon-events" ondblclick="openWindow('win-events')" style="top: 120px; left: 24px;">
+      <div class="icon-canvas">
+        <svg viewBox="0 0 32 32" class="retro-svg">
+          <rect x="3" y="3" width="26" height="26" rx="2" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+          <circle cx="16" cy="16" r="9" fill="#0078d7"/>
+          <text x="14" y="21" fill="#fff" font-weight="bold" font-family="sans-serif" font-size="14">i</text>
+        </svg>
+      </div>
+      <span>Sucesos.msc</span>
+    </div>
+
+    <div class="desktop-icon draggable-icon" id="icon-explorer" ondblclick="openWindow('win-explorer')" style="top: 220px; left: 24px;">
+      <div class="icon-canvas">
+        <svg viewBox="0 0 32 32" class="retro-svg">
+          <path d="M2,5 L12,5 L15,8 L29,8 L29,26 L2,26 Z" fill="#fbc02d" stroke="#000" stroke-width="1.5"/>
+          <path d="M4,10 L30,10 L28,26 L2,26 Z" fill="#ffd54f" stroke="#000" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <span>Proyectos</span>
+    </div>
+
+    <div class="desktop-icon draggable-icon" id="icon-cli" ondblclick="openWindow('win-cli')" style="top: 320px; left: 24px;">
+      <div class="icon-canvas">
+        <svg viewBox="0 0 32 32" class="retro-svg">
+          <rect x="2" y="4" width="28" height="23" rx="1" fill="#000000" stroke="#000" stroke-width="1.5"/>
+          <rect x="2" y="4" width="28" height="5" fill="#c0c0c0"/>
+          <text x="4" y="19" fill="#ffffff" font-family="monospace" font-size="9" font-weight="bold">C:\&gt;_</text>
+        </svg>
+      </div>
+      <span>MS-DOS Prompt</span>
+    </div>
+
+    <div class="desktop-icon draggable-icon" id="icon-mines" ondblclick="openWindow('win-mines')" style="top: 420px; left: 24px;">
+      <div class="icon-canvas">
+        <svg viewBox="0 0 32 32" class="retro-svg">
+          <circle cx="16" cy="16" r="8" fill="#000000"/>
+          <line x1="16" y1="3" x2="16" y2="29" stroke="#000" stroke-width="2"/>
+          <line x1="3" y1="16" x2="29" y2="16" stroke="#000" stroke-width="2"/>
+          <circle cx="13" cy="13" r="2" fill="#ffffff"/>
+        </svg>
+      </div>
+      <span>Buscaminas</span>
+    </div>
+
+    <div class="desktop-icon draggable-icon" id="icon-contact" ondblclick="openWindow('win-contact')" style="top: 520px; left: 24px;">
+      <div class="icon-canvas">
+        <svg viewBox="0 0 32 32" class="retro-svg">
+          <rect x="4" y="2" width="24" height="28" fill="#ffffff" stroke="#000" stroke-width="1.5"/>
+          <line x1="8" y1="8" x2="24" y2="8" stroke="#1565c0" stroke-width="1.5"/>
+          <line x1="8" y1="14" x2="24" y2="14" stroke="#90caf9" stroke-width="1"/>
+          <line x1="8" y1="19" x2="24" y2="19" stroke="#90caf9" stroke-width="1"/>
+          <line x1="8" y1="24" x2="20" y2="24" stroke="#90caf9" stroke-width="1"/>
+        </svg>
+      </div>
+      <span>Contacto.txt</span>
+    </div>
+  </div>
+
+  <!-- Menú Contextual (Clic derecho) -->
+  <div id="retro-context-menu" class="context-menu">
+    <div class="context-item" id="ctx-open" onclick="ctxMenuAction('open')"><strong>Abrir</strong></div>
+    <div class="context-item" id="ctx-arrange" onclick="ctxMenuAction('arrange')">Alinear Iconos</div>
+    <div class="context-item" id="ctx-refresh" onclick="location.reload()">Actualizar</div>
+    <hr class="context-divider">
+    <div class="context-item" onclick="toggleWallpaper(); hideContextMenu();">Propiedades de Pantalla</div>
+    <div class="context-item" onclick="openWindow('win-about'); hideContextMenu();">Acerca de este equipo...</div>
+  </div>
+
+  <!-- Ventana: Mi Perfil -->
+  <div class="window win-popup resizable-win" id="win-about" style="top: 25px; left: 165px; width: 550px; height: 395px;">
+    <div class="title-bar">
+      <div class="title-bar-text">David Vellarino - Propiedades del Sistema</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-about')"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close" onclick="closeWindow('win-about')"></button>
+      </div>
+    </div>
+    <div class="window-body native-text" style="overflow-y: hidden; display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 6px;">
+          <div style="font-size: 38px;">💻</div>
+          <div>
+            <div style="font-size: 15px; font-weight: bold; color: #000080;">David Vellarino Cordero</div>
+            <div style="font-size: 12px; color: #222;">Responsable de Mejora Continua IT & Infraestructura[cite: 5]</div>
+          </div>
+        </div>
+        <fieldset style="margin-bottom: 6px;">
+          <legend>Resumen Ejecutivo</legend>
+          <p style="font-size: 12px; margin: 3px 0 4px 0; line-height: 1.35;">
+            +25 años liderando infraestructuras críticas, resiliencia operativa y automatización en entornos industriales híbridos (+3.000 usuarios, 15 sedes)[cite: 5].
+          </p>
+        </fieldset>
+        <fieldset>
+          <legend>Componentes Principales</legend>
+          <table class="clean-table">
+            <tr><td style="width: 150px;"><strong>Cloud / Datacenter:</strong></td><td>Azure, Nutanix, VMware vSphere[cite: 5]</td></tr>
+            <tr><td><strong>Ciberseguridad:</strong></td><td>Fortinet, Check Point, Entra ID, ISO 27001[cite: 5]</td></tr>
+            <tr><td><strong>Scripting:</strong></td><td>PowerShell Core, T-SQL, Integración con IA[cite: 5]</td></tr>
+          </table>
+        </fieldset>
+      </div>
+      <div style="text-align: right; margin-top: 4px;">
+        <button onclick="openWindow('win-events'); minimizeWindow('win-about');">Ver Historial Completo...</button>
+      </div>
+    </div>
+    <div class="resizer"></div>
+  </div>
+
+  <!-- Ventana: Visor de Sucesos -->
+  <div class="window win-popup resizable-win" id="win-events" style="top: 45px; left: 190px; width: 730px; height: 460px; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text">Visor de Sucesos (Registro de Trayectoria)</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-events')"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close" onclick="closeWindow('win-events')"></button>
+      </div>
+    </div>
+    <div class="window-body native-text" style="display: flex; flex-direction: column; padding: 0;">
+      <div class="events-table-header">
+        <div style="width: 70px;">Tipo</div>
+        <div style="width: 140px;">Fecha / Periodo</div>
+        <div style="width: 180px;">Origen / Empresa</div>
+        <div style="flex: 1;">Suceso / Rol</div>
+      </div>
+      <div class="events-table-body" id="events-top-pane" style="flex: 1;">
+        <div class="event-row" onclick="showEventDetail('mc')">
+          <div style="width: 70px;">ℹ️ Info</div>
+          <div style="width: 140px;">Oct 2024 - Act.</div>
+          <div style="width: 180px;">CL Grupo Industrial[cite: 5]</div>
+          <div style="flex: 1;">Responsable Mejora Continua IT[cite: 5]</div>
+        </div>
+        <div class="event-row" onclick="showEventDetail('infra')">
+          <div style="width: 70px;">ℹ️ Info</div>
+          <div style="width: 140px;">Abr 2012 - Oct 2024</div>
+          <div style="width: 180px;">CL Grupo Industrial[cite: 5]</div>
+          <div style="flex: 1;">Ingeniero de Infraestructuras TI[cite: 5]</div>
+        </div>
+        <div class="event-row" onclick="showEventDetail('dev')">
+          <div style="width: 70px;">ℹ️ Info</div>
+          <div style="width: 140px;">Abr 2001 - Abr 2012</div>
+          <div style="width: 180px;">CL Grupo Industrial[cite: 5]</div>
+          <div style="flex: 1;">Analista / Programador .NET & SQL[cite: 5]</div>
+        </div>
+        <div class="event-row" onclick="showEventDetail('support')">
+          <div style="width: 70px;">ℹ️ Info</div>
+          <div style="width: 140px;">Abr 1999 - Abr 2001</div>
+          <div style="width: 180px;">CL Grupo Industrial[cite: 5]</div>
+          <div style="flex: 1;">Especialista Soporte Técnico[cite: 5]</div>
+        </div>
+      </div>
+
+      <div class="split-horizontal" id="events-splitter"></div>
+
+      <div class="event-detail-box" id="event-detail-text" style="height: 145px;">
+        Selecciona un suceso arriba para ver los datos de auditoría y detalles técnicos.
+      </div>
+    </div>
+    <div class="resizer"></div>
+  </div>
+
+  <!-- Ventana: Explorador de Archivos -->
+  <div class="window win-popup resizable-win" id="win-explorer" style="top: 65px; left: 210px; width: 820px; height: 460px; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text" id="explorer-title">Explorando - C:\PROYECTOS</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-explorer')"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close" onclick="closeWindow('win-explorer')"></button>
+      </div>
+    </div>
+    <div class="explorer-toolbar">
+      <button class="nav-btn" onclick="navGoBack()" title="Atrás">⬅</button>
+      <button class="nav-btn" onclick="navGoUp()" title="Subir nivel">⬆</button>
+      <div class="address-box">
+        <span>Dirección:</span>
+        <input type="text" id="address-bar" value="C:\PROYECTOS" readonly>
+      </div>
+    </div>
+    <div class="window-body explorer-container">
+      <div class="explorer-tree-panel" id="explorer-tree-pane" style="width: 240px;">
+        <ul class="tree-view" id="explorer-tree"></ul>
+      </div>
+      <div class="split-vertical" id="explorer-splitter"></div>
+      <div class="explorer-files-panel" id="explorer-files"></div>
+    </div>
+    <div class="status-bar">
+      <p class="status-bar-field" id="status-items">0 objeto(s)</p>
+      <p class="status-bar-field">Sistema de archivos FAT32</p>
+    </div>
+    <div class="resizer"></div>
+  </div>
+
+  <!-- Ventana: Bloc de notas (Visor) -->
+  <div class="window win-popup resizable-win" id="win-notepad" style="top: 90px; left: 240px; width: 520px; height: 350px; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text" id="notepad-title">Bloc de notas</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-notepad')"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close" onclick="closeWindow('win-notepad')"></button>
+      </div>
+    </div>
+    <div class="window-body" style="padding: 0; margin: 0;">
+      <textarea id="notepad-content" class="notepad-area" readonly></textarea>
+    </div>
+    <div class="resizer"></div>
+  </div>
+
+  <!-- Ventana: MS-DOS Prompt -->
+  <div class="window win-popup resizable-win" id="win-cli" style="top: 70px; left: 180px; width: 720px; height: 530px; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text">MS-DOS Prompt</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-cli')"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close" onclick="closeWindow('win-cli')"></button>
+      </div>
+    </div>
+    <div class="window-body dos-terminal" id="terminal-container" onclick="focusTerminal()">
+      <div id="dos-screen">
+        <div class="dos-line">Microsoft(R) MS-DOS(R) Version 6.22</div>
+        <div class="dos-line">(C)Copyright Microsoft Corp 1981-1994.</div>
+        <div class="dos-line">Escribe 'HELP' para ver los comandos internos y utilidades.</div>
+        <br>
+        <div id="history-container"></div>
+        <div class="dos-active-prompt">
+          <span class="dos-prompt-text">C:\USERS\DAVID&gt;</span>
+          <span id="typed-text"></span><span class="dos-cursor">_</span>
+        </div>
+      </div>
+      <input type="text" id="dos-hidden-input" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="resizer"></div>
+  </div>
+
+  <!-- Ventana: Buscaminas -->
+  <div class="window win-popup" id="win-mines" style="top: 60px; left: 300px; width: auto; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text">Buscaminas</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-mines')"></button>
+        <button aria-label="Close" onclick="closeWindow('win-mines')"></button>
+      </div>
+    </div>
+    <div class="explorer-menu-bar">
+      <span onclick="initMinesweeper()" style="cursor:pointer;"><u>J</u>uego</span>
+      <span onclick="openWindow('win-mines-scores')" style="cursor:pointer;"><u>M</u>ejores Tiempos</span>
+    </div>
+    <div class="window-body minesweeper-body">
+      <div class="mines-header">
+        <div class="mines-counter" id="mines-flag-count">010</div>
+        <button class="mines-face" id="mines-reset-btn" onclick="initMinesweeper()">🙂</button>
+        <div class="mines-counter" id="mines-timer">000</div>
+      </div>
+      <div id="mines-grid" class="mines-board"></div>
+    </div>
+  </div>
+
+  <!-- Ventana: Récords Buscaminas -->
+  <div class="window win-popup" id="win-mines-scores" style="top: 100px; left: 340px; width: 340px; display: none; z-index: 999;">
+    <div class="title-bar">
+      <div class="title-bar-text">Mejores Tiempos - Buscaminas</div>
+      <div class="title-bar-controls">
+        <button aria-label="Close" onclick="closeWindow('win-mines-scores')"></button>
+      </div>
+    </div>
+    <div class="window-body native-text">
+      <p style="font-size: 12px; margin-top: 0;"><strong>Récords Estándar (Nivel Principiante 9x9):</strong></p>
+      <table class="clean-table" style="font-size: 11px;">
+        <tr><td><strong>1. Maestro Windows</strong></td><td>10 seg</td></tr>
+        <tr><td><strong>2. Jugador Avanzado</strong></td><td>25 seg</td></tr>
+        <tr><td><strong>3. Jugador Medio</strong></td><td>45 seg</td></tr>
+        <tr><td><strong>4. Jugador Casual</strong></td><td>80 seg</td></tr>
+        <tr style="color: #000080; font-weight: bold; background: #e0e0e0;">
+          <td>⭐ Tu Mejor Marca</td>
+          <td id="best-user-time">-- seg</td>
+        </tr>
+      </table>
+      <div style="margin-top: 12px; text-align: center;">
+        <button onclick="closeWindow('win-mines-scores')">Aceptar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ventana: Contacto (Ampliadas dimensiones: width 540px, height 420px) -->
+  <div class="window win-popup resizable-win" id="win-contact" style="top: 100px; left: 260px; width: 540px; height: 420px; display: none;">
+    <div class="title-bar">
+      <div class="title-bar-text">Contacto.txt - Bloc de notas</div>
+      <div class="title-bar-controls">
+        <button aria-label="Minimize" onclick="minimizeWindow('win-contact')"></button>
+        <button aria-label="Maximize"></button>
+        <button aria-label="Close" onclick="closeWindow('win-contact')"></button>
+      </div>
+    </div>
+    <div class="window-body" style="padding: 0; margin: 0;">
+      <textarea readonly class="notepad-area">
+==================================================
+  DATOS DE CONTACTO PROFESIONAL
+==================================================
+
+Nombre:    David Vellarino Cordero[cite: 5]
+Puesto:    Responsable de Mejora Continua IT[cite: 5]
+Ubicación: Almendralejo (Badajoz), España[cite: 5]
+Email:     david.vellarino@gmail.com[cite: 5]
+LinkedIn:  linkedin.com/in/david-vellarino[cite: 5]
+GitHub:    https://github.com/DaVeCor
+
+Educación: Grado en Ingeniería Informática (U.N.E.D.)[cite: 5]
+Idiomas:   Español (Nativo) | Inglés B2 (Cambridge)[cite: 5, 8]
+      </textarea>
+    </div>
+    <div class="resizer"></div>
+  </div>
+
+  <!-- Barra de tareas -->
+  <div id="taskbar">
+    <div class="start-wrapper">
+      <button class="xp-start-btn" id="start-btn" onclick="toggleStartMenu()">
+        <svg class="win-flag" viewBox="0 0 16 16">
+          <path d="M1 2 L7 1 L7 7 L1 7 Z" fill="#eb3c00"/>
+          <path d="M8 0.8 L15 0 L15 7 L8 7 Z" fill="#4ea824"/>
+          <path d="M1 8 L7 8 L7 14 L1 13 Z" fill="#0072c6"/>
+          <path d="M8 8 L15 8 L15 15 L8 14.2 Z" fill="#f9ba00"/>
+        </svg>
+        <span>inicio</span>
+      </button>
+
+      <div class="start-menu" id="start-menu">
+        <div class="start-menu-sidebar">
+          <span><strong>Windows</strong></span>
+        </div>
+        <div class="start-menu-items">
+          <div class="start-item" onclick="openWindow('win-about'); toggleStartMenu();">💻 Mi Perfil</div>
+          <div class="start-item" onclick="openWindow('win-events'); toggleStartMenu();">📊 Sucesos.msc</div>
+          <div class="start-item" onclick="openWindow('win-explorer'); toggleStartMenu();">📁 Proyectos</div>
+          <div class="start-item" onclick="openWindow('win-cli'); toggleStartMenu();">📟 MS-DOS Prompt</div>
+          <div class="start-item" onclick="openWindow('win-mines'); toggleStartMenu();">💣 Buscaminas</div>
+          <div class="start-item" onclick="openWindow('win-contact'); toggleStartMenu();">📝 Contacto.txt</div>
+          <hr>
+          <div class="start-item" onclick="toggleWallpaper(); toggleStartMenu();">🖼️ Cambiar Fondo (Bliss / Teal)</div>
+          <div class="start-item" onclick="location.reload();">🔄 Reiniciar Sistema</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tareas activas -->
+    <div id="taskbar-tasks"></div>
+
+    <div class="tray">
+      <span class="tray-icon">🔈</span>
+      <span id="clock">12:00</span>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
