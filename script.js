@@ -28,9 +28,7 @@ function toggleWallpaper() {
     : "none";
 }
 
-// ========================================================
-// CONTROL DE VENTANAS Y ESTADOS
-// ========================================================
+// Control de ventanas y estados
 let highestZ = 30;
 
 const windowState = {
@@ -40,7 +38,9 @@ const windowState = {
   'win-cli': 'closed',
   'win-mines': 'closed',
   'win-contact': 'closed',
-  'win-notepad': 'closed'
+  'win-notepad': 'closed',
+  'win-mines-win': 'closed',
+  'win-mines-scores': 'closed'
 };
 
 function bringToFront(win) {
@@ -112,7 +112,7 @@ document.querySelectorAll('.win-popup').forEach(win => {
   });
 });
 
-// Redimensionado de ventanas desde esquina
+// Redimensionado de ventanas
 document.querySelectorAll('.resizer').forEach(resizer => {
   resizer.addEventListener('mousedown', (e) => {
     e.stopPropagation();
@@ -136,7 +136,7 @@ document.querySelectorAll('.resizer').forEach(resizer => {
   });
 });
 
-// Splitters arrastrables
+// Splitters
 const eventsSplitter = document.getElementById('events-splitter');
 const eventDetailBox = document.getElementById('event-detail-text');
 
@@ -205,16 +205,11 @@ function updateTaskbar() {
 }
 updateTaskbar();
 
-// ========================================================
-// ICONOS DE ESCRITORIO ARRASTRABLES (DRAG & DROP)
-// ========================================================
-let activeDraggedIcon = null;
-
+// Iconos arrastrables
 document.querySelectorAll('.draggable-icon').forEach(icon => {
   icon.addEventListener('mousedown', (e) => {
-    if (e.button !== 0) return; // Solo clic izquierdo
+    if (e.button !== 0) return;
 
-    // Seleccionar visualmente
     document.querySelectorAll('.draggable-icon').forEach(i => i.classList.remove('selected'));
     icon.classList.add('selected');
 
@@ -226,7 +221,6 @@ document.querySelectorAll('.draggable-icon').forEach(icon => {
       let newX = e.clientX - desktopRect.left - shiftX;
       let newY = e.clientY - desktopRect.top - shiftY;
 
-      // Limitar dentro del escritorio
       newX = Math.max(0, Math.min(newX, desktopRect.width - icon.offsetWidth));
       newY = Math.max(0, Math.min(newY, desktopRect.height - icon.offsetHeight));
 
@@ -244,14 +238,12 @@ document.querySelectorAll('.draggable-icon').forEach(icon => {
   });
 });
 
-// Deseleccionar iconos al pulsar en fondo
 document.getElementById('desktop').addEventListener('mousedown', (e) => {
   if (e.target.id === 'desktop') {
     document.querySelectorAll('.draggable-icon').forEach(i => i.classList.remove('selected'));
   }
 });
 
-// Alinear iconos en cuadrícula vertical
 function autoArrangeIcons() {
   const icons = document.querySelectorAll('.draggable-icon');
   let topOffset = 20;
@@ -262,16 +254,26 @@ function autoArrangeIcons() {
   });
 }
 
-// ========================================================
-// CONTROL DEL BOTÓN DERECHO (MENÚ CONTEXTUAL RETRO)
-// ========================================================
+// Menú contextual
 const contextMenu = document.getElementById('retro-context-menu');
 let contextTargetIcon = null;
 
 document.addEventListener('contextmenu', (e) => {
-  e.preventDefault(); // Cancela el menú contextual de Chrome/Edge
+  if (e.target.classList.contains('mine-cell') || e.target.closest('#win-mines')) {
+    hideContextMenu();
+    return;
+  }
 
   const clickedIcon = e.target.closest('.draggable-icon');
+  const isWallpaper = e.target.id === 'desktop' || e.target.id === 'desktop-wallpaper';
+
+  if (!clickedIcon && !isWallpaper) {
+    e.preventDefault();
+    hideContextMenu();
+    return;
+  }
+
+  e.preventDefault();
   contextTargetIcon = clickedIcon;
 
   const btnOpen = document.getElementById('ctx-open');
@@ -283,7 +285,6 @@ document.addEventListener('contextmenu', (e) => {
     btnOpen.style.display = 'none';
   }
 
-  // Posicionar menú
   let posX = e.clientX;
   let posY = e.clientY;
   if (posX + 190 > window.innerWidth) posX = window.innerWidth - 190;
@@ -313,32 +314,32 @@ function ctxMenuAction(action) {
   }
 }
 
-// Visor de sucesos
+// Visor de sucesos (Sin referencias a citas)
 const eventLogs = {
   mc: "<strong>ID Suceso: 1004 - Mejora Continua IT (CL Grupo Industrial)</strong><br>" +
       "Periodo: Octubre 2024 - Actualidad.<br>" +
-      "• Definición e implantación del marco integral de optimización IT[cite: 1].<br>" +
-      "• Estandarización de documentación técnica y repositorios en Confluence[cite: 1].<br>" +
-      "• Automatizaciones mediante PowerShell y agentes de IA (cruce de horas/tickets y pasarelas a ERP)[cite: 1].",
+      "• Definición e implantación del marco integral de optimización IT.<br>" +
+      "• Estandarización de documentación técnica y repositorios en Confluence.<br>" +
+      "• Automatizaciones mediante PowerShell y agentes de IA (cruce de horas/tickets y pasarelas a ERP).",
   infra: "<strong>ID Suceso: 1003 - Ingeniero de Infraestructuras TI (CL Grupo Industrial)</strong><br>" +
          "Periodo: Abril 2012 - Octubre 2024.<br>" +
-         "• Administración de entorno para +3.000 usuarios, 15 sedes, +150 servidores y +200 máquinas virtuales en Nutanix/VMware[cite: 1].<br>" +
-         "• Diseño de Landing Zone corporativa en Azure (VPNs, redes híbridas, peering)[cite: 1].<br>" +
-         "• Ciberseguridad: Fortinet, Check Point, CrowdStrike y DR satelital[cite: 1].",
+         "• Administración de entorno para +3.000 usuarios, 15 sedes, +150 servidores y +200 máquinas virtuales en Nutanix/VMware.<br>" +
+         "• Diseño de Landing Zone corporativa en Azure (VPNs, redes híbridas, peering).<br>" +
+         "• Ciberseguridad: Fortinet, Check Point, CrowdStrike y DR satelital.",
   dev: "<strong>ID Suceso: 1002 - Analista / Programador (CL Grupo Industrial)</strong><br>" +
-       "Periodo: Abril 2001 - Abr 2012.<br>" +
-       "• Desarrollo de aplicaciones internas en VB6, VB.NET, C# y ASP.NET[cite: 1].<br>" +
-       "• Modelado y optimización de bases de datos relacionales en Microsoft SQL Server[cite: 1].",
+       "Periodo: Abril 2001 - Abril 2012.<br>" +
+       "• Desarrollo de aplicaciones internas en VB6, VB.NET, C# y ASP.NET.<br>" +
+       "• Modelado y optimización de bases de datos relacionales en Microsoft SQL Server.",
   support: "<strong>ID Suceso: 1001 - Soporte Técnico (CL Grupo Industrial)</strong><br>" +
-           "Periodo: Abril 1999 - Abr 2001.<br>" +
-           "• Microinformática, redes locales y despliegue de puestos[cite: 1]."
+           "Periodo: Abril 1999 - Abril 2001.<br>" +
+           "• Microinformática, redes locales y despliegue de puestos."
 };
 
 function showEventDetail(key) {
   document.getElementById('event-detail-text').innerHTML = eventLogs[key];
 }
 
-// Explorador de archivos
+// Explorador de archivos (Sin referencias a citas)
 const vfs = {
   name: "C:\\PROYECTOS",
   children: {
@@ -347,11 +348,11 @@ const vfs = {
       children: {
         "arquitectura_red.txt": {
           type: "file",
-          content: "PROYECTO: Landing Zone Corporativa en Azure[cite: 1]\n\n- Arquitectura híbrida para migración de entornos on-premise a Cloud[cite: 1].\n- Redes virtuales, conectividad privada, peering y seguridad perimetral[cite: 1].\n- VPN P2S/S2S con autenticación basada en certificados[cite: 1]."
+          content: "PROYECTO: Landing Zone Corporativa en Azure\n\n- Arquitectura híbrida para migración de entornos on-premise a Cloud.\n- Redes virtuales, conectividad privada, peering y seguridad perimetral.\n- VPN P2S/S2S con autenticación basada en certificados."
         },
         "deploy.ps1": {
           type: "file",
-          content: "# Script Provisioning[cite: 1]\nConnect-AzAccount\nNew-AzVirtualNetwork -Name 'VNet-Hub-Prod' -ResourceGroupName 'RG-Core' -Location 'westeurope'[cite: 1]"
+          content: "# Script Provisioning\nConnect-AzAccount\nNew-AzVirtualNetwork -Name 'VNet-Hub-Prod' -ResourceGroupName 'RG-Core' -Location 'westeurope'"
         }
       }
     },
@@ -360,7 +361,7 @@ const vfs = {
       children: {
         "plan_contingencia.txt": {
           type: "file",
-          content: "DISASTER RECOVERY Y CONTINUIDAD OPERATIVA[cite: 1]\n\n- Clústeres hiperconvergentes Nutanix y VMware (+200 VMs)[cite: 1].\n- Contingencia de comunicaciones con failover automatizado a enlace satelital[cite: 1].\n- Política de respaldo 3-2-1-1-0 con Veeam Backup[cite: 1, 6]."
+          content: "DISASTER RECOVERY Y CONTINUIDAD OPERATIVA\n\n- Clústeres hiperconvergentes Nutanix y VMware (+200 VMs).\n- Contingencia de comunicaciones con failover automatizado a enlace satelital.\n- Política de respaldo 3-2-1-1-0 con Veeam Backup."
         }
       }
     },
@@ -369,7 +370,7 @@ const vfs = {
       children: {
         "agentes_workflows.txt": {
           type: "file",
-          content: "AUTOMATIZACIÓN CON POWERSHELL E IA[cite: 1]\n\n- Skill de IA para cruce inteligente de calendarios y tickets[cite: 1].\n- Workflows de aprobación automatizados con doble factor[cite: 1].\n- Pasarelas para conectar modelos LLM con ERPs corporativos[cite: 1]."
+          content: "AUTOMATIZACIÓN CON POWERSHELL E IA\n\n- Skill de IA para cruce inteligente de calendarios y tickets.\n- Workflows de aprobación automatizados con doble factor.\n- Pasarelas para conectar modelos LLM con ERPs corporativos."
         }
       }
     },
@@ -378,13 +379,13 @@ const vfs = {
       children: {
         "hardening_iso27001.txt": {
           type: "file",
-          content: "SEGURIDAD DE IDENTIDADES (ISO 27001)[cite: 1]\n\n- Acceso Condicional y Single Sign-On (SSO) en Microsoft Entra ID[cite: 1].\n- Hardening periódico de Active Directory[cite: 1].\n- Plan PAM en 2 fases y segmentación OT/IT[cite: 1]."
+          content: "SEGURIDAD DE IDENTIDADES (ISO 27001)\n\n- Acceso Condicional y Single Sign-On (SSO) en Microsoft Entra ID.\n- Hardening periódico de Active Directory.\n- Plan PAM en 2 fases y segmentación OT/IT."
         }
       }
     },
     "LEAME.txt": {
       type: "file",
-      content: "Explorador de Proyectos de David Vellarino[cite: 1].\nRepositorio oficial GitHub: https://github.com/DaVeCor\nHaz doble clic en las carpetas para entrar y en los archivos para abrirlos."
+      content: "Explorador de Proyectos de David Vellarino.\nRepositorio oficial GitHub: https://github.com/DaVeCor\nHaz doble clic en las carpetas para entrar y en los archivos para abrirlos."
     }
   }
 };
@@ -546,7 +547,7 @@ hiddenInput.addEventListener('keydown', (e) => {
         break;
 
       case 'ver':
-        outDiv.innerText = "MS-DOS Version 6.22 (Microsoft Windows 95 Release)";
+        outDiv.innerText = "MS-DOS Version 6.22 (Portfolio Edition v1.2.1 - Build 2026.09)";
         break;
 
       case 'mem':
@@ -839,9 +840,7 @@ function checkMinesWin() {
       document.getElementById('best-user-time').innerText = `${bestRecord} seg`;
     }
 
-    setTimeout(() => {
-      alert(`¡VICTORIA!\nHas despejado el campo de minas en ${mSeconds} segundos.`);
-      openWindow('win-mines-scores');
-    }, 150);
+    document.getElementById('mines-win-message').innerText = `Has despejado el campo en ${mSeconds} segundos.`;
+    openWindow('win-mines-win');
   }
 }

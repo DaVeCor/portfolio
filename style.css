@@ -37,7 +37,7 @@ body {
   z-index: 2;
 }
 
-/* Iconos de Escritorio Arrastrables (Posicionamiento Absoluto) */
+/* Iconos de Escritorio Arrastrables */
 .desktop-icon {
   position: absolute;
   width: 96px;
