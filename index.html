@@ -2,17 +2,68 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>David Vellarino - Windows Edition</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Portfolio - Windows Edition</title>
   <link rel="stylesheet" href="https://unpkg.com/98.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Fondo de pantalla Bliss -->
+  <!-- ========================================== -->
+  <!-- ENTORNO MÓVIL: NOKIA 3310 (FULL SCREEN)    -->
+  <!-- ========================================== -->
+  <div id="nokia-container">
+    <div class="nokia-chassis">
+      <div class="nokia-earpiece"></div>
+      <div class="nokia-brand">NOKIA</div>
+      
+      <!-- Pantalla LCD Verde Ampliada -->
+      <div class="nokia-screen-bezel">
+        <div class="nokia-lcd" id="nokia-screen">
+          <div class="lcd-status-bar">
+            <span class="signal-bars">𝄃𝄃𝄃𝄃</span>
+            <span id="nokia-clock">10:04</span>
+            <span class="battery-bars">[■■■■]</span>
+          </div>
+
+          <div class="lcd-header" id="nokia-title">MENÚ PRINCIPAL</div>
+
+          <div class="lcd-content" id="nokia-content"></div>
+
+          <div class="lcd-softkeys">
+            <span id="nokia-left-softkey">Selec.</span>
+            <span id="nokia-right-softkey">Atrás</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Teclado físico interactivo con cruceta -->
+      <div class="nokia-keypad">
+        <div class="keypad-top-row">
+          <button class="nokia-btn btn-action" id="btn-nokia-select" onclick="nokiaPressSelect()">—</button>
+          <button class="nokia-btn btn-c" id="btn-nokia-back" onclick="nokiaPressBack()">C</button>
+        </div>
+        
+        <div class="keypad-dpad">
+          <button class="nokia-btn btn-dpad dpad-up" onclick="nokiaNavUp()" aria-label="Arriba">▲</button>
+          <div class="dpad-mid">
+            <button class="nokia-btn btn-dpad dpad-left" onclick="nokiaNavLeft()" aria-label="Izquierda">◄</button>
+            <div class="dpad-center"></div>
+            <button class="nokia-btn btn-dpad dpad-right" onclick="nokiaNavRight()" aria-label="Derecha">►</button>
+          </div>
+          <button class="nokia-btn btn-dpad dpad-down" onclick="nokiaNavDown()" aria-label="Abajo">▼</button>
+        </div>
+
+        <div class="nokia-hint">Cruceta o toques en pantalla</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- ENTORNO ESCRITORIO: WINDOWS                -->
+  <!-- ========================================== -->
   <div id="desktop-wallpaper"></div>
 
-  <!-- Escritorio con iconos posicionados individualmente -->
   <div id="desktop">
     <div class="desktop-icon draggable-icon" id="icon-about" ondblclick="openWindow('win-about')" style="top: 20px; left: 24px;">
       <div class="icon-canvas">
@@ -85,7 +136,6 @@
     </div>
   </div>
 
-  <!-- Menú Contextual (Clic derecho) -->
   <div id="retro-context-menu" class="context-menu">
     <div class="context-item" id="ctx-open" onclick="ctxMenuAction('open')"><strong>Abrir</strong></div>
     <div class="context-item" id="ctx-arrange" onclick="ctxMenuAction('arrange')">Alinear Iconos</div>
@@ -95,10 +145,10 @@
     <div class="context-item" onclick="openWindow('win-about'); hideContextMenu();">Acerca de este equipo...</div>
   </div>
 
-  <!-- Ventana: Mi Perfil -->
+  <!-- Ventana: Mi Perfil (Contenido inyectado desde data.js) -->
   <div class="window win-popup resizable-win" id="win-about" style="top: 25px; left: 165px; width: 560px; height: 430px;">
     <div class="title-bar">
-      <div class="title-bar-text">David Vellarino - Propiedades del Sistema</div>
+      <div class="title-bar-text" id="about-win-title">Propiedades del Sistema</div>
       <div class="title-bar-controls">
         <button aria-label="Minimize" onclick="minimizeWindow('win-about')"></button>
         <button aria-label="Maximize"></button>
@@ -106,39 +156,15 @@
       </div>
     </div>
     <div class="window-body native-text" style="overflow-y: hidden; display: flex; flex-direction: column; justify-content: space-between;">
-      <div>
-        <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 6px;">
-          <div style="font-size: 38px;">💻</div>
-          <div>
-            <div style="font-size: 15px; font-weight: bold; color: #000080;">David Vellarino Cordero</div>
-            <div style="font-size: 12px; color: #222;">Responsable de Mejora Continua IT & Infraestructura</div>
-            <div style="font-size: 11px; color: #555; margin-top: 2px;">Versión del Sistema: <strong>v1.2.1 (Build 2026.09)</strong></div>
-          </div>
-        </div>
-        <fieldset style="margin-bottom: 6px;">
-          <legend>Resumen Ejecutivo</legend>
-          <p style="font-size: 12px; margin: 3px 0 4px 0; line-height: 1.35;">
-            +25 años liderando infraestructuras críticas, resiliencia operativa y automatización en entornos industriales híbridos (+3.000 usuarios, 15 sedes).
-          </p>
-        </fieldset>
-        <fieldset>
-          <legend>Componentes Principales</legend>
-          <table class="clean-table">
-            <tr><td style="width: 150px;"><strong>Cloud / Datacenter:</strong></td><td>Azure, Nutanix, VMware vSphere</td></tr>
-            <tr><td><strong>Ciberseguridad:</strong></td><td>Fortinet, Check Point, Entra ID, ISO 27001</td></tr>
-            <tr><td><strong>Scripting:</strong></td><td>PowerShell Core, T-SQL, Integración con IA</td></tr>
-          </table>
-        </fieldset>
-      </div>
+      <div id="about-dyn-content"></div>
       <div style="text-align: right; margin-top: 4px;">
-        <!-- Corregido: solo abre eventos sin cerrar ni minimizar el perfil -->
         <button onclick="openWindow('win-events');">Ver Historial Completo...</button>
       </div>
     </div>
     <div class="resizer"></div>
   </div>
 
-  <!-- Ventana: Visor de Sucesos -->
+  <!-- Ventana: Visor de Sucesos (Filas inyectadas desde data.js) -->
   <div class="window win-popup resizable-win" id="win-events" style="top: 45px; left: 190px; width: 730px; height: 460px; display: none;">
     <div class="title-bar">
       <div class="title-bar-text">Visor de Sucesos (Registro de Trayectoria)</div>
@@ -155,32 +181,7 @@
         <div style="width: 180px;">Origen / Empresa</div>
         <div style="flex: 1;">Suceso / Rol</div>
       </div>
-      <div class="events-table-body" id="events-top-pane" style="flex: 1;">
-        <div class="event-row" onclick="showEventDetail('mc')">
-          <div style="width: 70px;">ℹ️ Info</div>
-          <div style="width: 140px;">Oct 2024 - Act.</div>
-          <div style="width: 180px;">CL Grupo Industrial</div>
-          <div style="flex: 1;">Responsable Mejora Continua IT</div>
-        </div>
-        <div class="event-row" onclick="showEventDetail('infra')">
-          <div style="width: 70px;">ℹ️ Info</div>
-          <div style="width: 140px;">Abr 2012 - Oct 2024</div>
-          <div style="width: 180px;">CL Grupo Industrial</div>
-          <div style="flex: 1;">Ingeniero de Infraestructuras TI</div>
-        </div>
-        <div class="event-row" onclick="showEventDetail('dev')">
-          <div style="width: 70px;">ℹ️ Info</div>
-          <div style="width: 140px;">Abr 2001 - Abr 2012</div>
-          <div style="width: 180px;">CL Grupo Industrial</div>
-          <div style="flex: 1;">Analista / Programador .NET & SQL</div>
-        </div>
-        <div class="event-row" onclick="showEventDetail('support')">
-          <div style="width: 70px;">ℹ️ Info</div>
-          <div style="width: 140px;">Abr 1999 - Abr 2001</div>
-          <div style="width: 180px;">CL Grupo Industrial</div>
-          <div style="flex: 1;">Especialista Soporte Técnico</div>
-        </div>
-      </div>
+      <div class="events-table-body" id="events-top-pane" style="flex: 1;"></div>
 
       <div class="split-horizontal" id="events-splitter"></div>
 
@@ -194,7 +195,7 @@
   <!-- Ventana: Explorador de Archivos -->
   <div class="window win-popup resizable-win" id="win-explorer" style="top: 65px; left: 210px; width: 820px; height: 460px; display: none;">
     <div class="title-bar">
-      <div class="title-bar-text" id="explorer-title">Explorando - C:\PROYECTOS</div>
+      <div class="title-bar-text" id="explorer-title">Explorando</div>
       <div class="title-bar-controls">
         <button aria-label="Minimize" onclick="minimizeWindow('win-explorer')"></button>
         <button aria-label="Maximize"></button>
@@ -206,7 +207,7 @@
       <button class="nav-btn" onclick="navGoUp()" title="Subir nivel">⬆</button>
       <div class="address-box">
         <span>Dirección:</span>
-        <input type="text" id="address-bar" value="C:\PROYECTOS" readonly>
+        <input type="text" id="address-bar" value="" readonly>
       </div>
     </div>
     <div class="window-body explorer-container">
@@ -223,7 +224,7 @@
     <div class="resizer"></div>
   </div>
 
-  <!-- Ventana: Bloc de notas (Visor) -->
+  <!-- Ventana: Bloc de notas -->
   <div class="window win-popup resizable-win" id="win-notepad" style="top: 90px; left: 240px; width: 520px; height: 350px; display: none;">
     <div class="title-bar">
       <div class="title-bar-text" id="notepad-title">Bloc de notas</div>
@@ -257,7 +258,7 @@
         <br>
         <div id="history-container"></div>
         <div class="dos-active-prompt">
-          <span class="dos-prompt-text">C:\USERS\DAVID&gt;</span>
+          <span class="dos-prompt-text" id="dos-prompt-indicator">C:\></span>
           <span id="typed-text"></span><span class="dos-cursor">_</span>
         </div>
       </div>
@@ -289,7 +290,6 @@
     </div>
   </div>
 
-  <!-- Cuadro de Diálogo: Victoria en Buscaminas -->
   <div class="window win-popup" id="win-mines-win" style="top: 140px; left: 330px; width: 300px; display: none; z-index: 10000;">
     <div class="title-bar">
       <div class="title-bar-text">Buscaminas</div>
@@ -305,7 +305,6 @@
     </div>
   </div>
 
-  <!-- Ventana: Récords Buscaminas -->
   <div class="window win-popup" id="win-mines-scores" style="top: 100px; left: 340px; width: 340px; display: none; z-index: 999;">
     <div class="title-bar">
       <div class="title-bar-text">Mejores Tiempos - Buscaminas</div>
@@ -331,7 +330,7 @@
     </div>
   </div>
 
-  <!-- Ventana: Contacto -->
+  <!-- Ventana: Contacto (Texto inyectado desde data.js) -->
   <div class="window win-popup resizable-win" id="win-contact" style="top: 110px; left: 260px; width: 540px; height: 310px; display: none;">
     <div class="title-bar">
       <div class="title-bar-text">Contacto.txt - Bloc de notas</div>
@@ -342,21 +341,7 @@
       </div>
     </div>
     <div class="window-body" style="padding: 0; margin: 0;">
-      <textarea readonly class="notepad-area">
-==================================================
-  DATOS DE CONTACTO PROFESIONAL
-==================================================
-
-Nombre:    David Vellarino Cordero
-Puesto:    Responsable de Mejora Continua IT
-Ubicación: Almendralejo (Badajoz), España
-Email:     david.vellarino@gmail.com
-LinkedIn:  linkedin.com/in/david-vellarino
-GitHub:    https://github.com/DaVeCor
-
-Educación: Grado en Ingeniería Informática (U.N.E.D.)
-Idiomas:   Español (Nativo) | Inglés B2 (Cambridge)
-      </textarea>
+      <textarea readonly class="notepad-area" id="contact-dyn-content"></textarea>
     </div>
     <div class="resizer"></div>
   </div>
@@ -386,13 +371,13 @@ Idiomas:   Español (Nativo) | Inglés B2 (Cambridge)
           <div class="start-item" onclick="openWindow('win-mines'); toggleStartMenu();">💣 Buscaminas</div>
           <div class="start-item" onclick="openWindow('win-contact'); toggleStartMenu();">📝 Contacto.txt</div>
           <hr>
+          <div class="start-item" onclick="switchToNokiaView(); toggleStartMenu();">📱 Simular Nokia 3310</div>
           <div class="start-item" onclick="toggleWallpaper(); toggleStartMenu();">🖼️ Cambiar Fondo (Bliss / Teal)</div>
           <div class="start-item" onclick="location.reload();">🔄 Reiniciar Sistema</div>
         </div>
       </div>
     </div>
 
-    <!-- Tareas activas -->
     <div id="taskbar-tasks"></div>
 
     <div class="tray">
@@ -401,6 +386,8 @@ Idiomas:   Español (Nativo) | Inglés B2 (Cambridge)
     </div>
   </div>
 
+  <!-- Carga de la Base de Datos antes de la lógica -->
+  <script src="data.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

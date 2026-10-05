@@ -1,34 +1,126 @@
-// Reloj digital
+// ========================================================
+// INICIALIZACIÓN DINÁMICA DESDE data.js
+// ========================================================
+function initPortfolioContent() {
+  document.title = PORTFOLIO_DATA.system.pageTitle;
+
+  // 1. Título y contenido de la ventana Mi Perfil
+  const aboutWinTitle = document.getElementById('about-win-title');
+  if (aboutWinTitle) {
+    aboutWinTitle.innerText = `${PORTFOLIO_DATA.profile.fullName} - Propiedades del Sistema`;
+  }
+  const aboutDynBox = document.getElementById('about-dyn-content');
+  if (aboutDynBox) {
+    const tableRows = PORTFOLIO_DATA.profile.components.map(c => `
+      <tr>
+        <td style="width: 150px;"><strong>${c.label}</strong></td>
+        <td>${c.value}</td>
+      </tr>
+    `).join('');
+
+    aboutDynBox.innerHTML = `
+      <div>
+        <div style="display: flex; gap: 14px; align-items: center; margin-bottom: 6px;">
+          <div style="font-size: 38px;">💻</div>
+          <div>
+            <div style="font-size: 15px; font-weight: bold; color: #000080;">${PORTFOLIO_DATA.profile.fullName}</div>
+            <div style="font-size: 12px; color: #222;">${PORTFOLIO_DATA.profile.role}</div>
+            <div style="font-size: 11px; color: #555; margin-top: 2px;">Versión del Sistema: <strong>${PORTFOLIO_DATA.system.version} (${PORTFOLIO_DATA.system.build})</strong></div>
+          </div>
+        </div>
+        <fieldset style="margin-bottom: 6px;">
+          <legend>Resumen Ejecutivo</legend>
+          <p style="font-size: 12px; margin: 3px 0 4px 0; line-height: 1.35;">
+            ${PORTFOLIO_DATA.profile.summary}
+          </p>
+        </fieldset>
+        <fieldset>
+          <legend>Componentes Principales</legend>
+          <table class="clean-table">${tableRows}</table>
+        </fieldset>
+      </div>
+    `;
+  }
+
+  // 2. Visor de Sucesos
+  const eventsTableBody = document.getElementById('events-top-pane');
+  if (eventsTableBody) {
+    eventsTableBody.innerHTML = '';
+    PORTFOLIO_DATA.events.forEach(evt => {
+      const row = document.createElement('div');
+      row.className = 'event-row';
+      row.onclick = () => showEventDetail(evt.id);
+      row.innerHTML = `
+        <div style="width: 70px;">${evt.type}</div>
+        <div style="width: 140px;">${evt.period}</div>
+        <div style="width: 180px;">${evt.company}</div>
+        <div style="flex: 1;">${evt.role}</div>
+      `;
+      eventsTableBody.appendChild(row);
+    });
+  }
+
+  // 3. Ventana Contacto.txt
+  const contactBox = document.getElementById('contact-dyn-content');
+  if (contactBox) {
+    contactBox.value = 
+`==================================================
+  DATOS DE CONTACTO PROFESIONAL
+==================================================
+
+Nombre:    ${PORTFOLIO_DATA.contact.fullName}
+Puesto:    ${PORTFOLIO_DATA.contact.role}
+Ubicación: ${PORTFOLIO_DATA.contact.location}
+Email:     ${PORTFOLIO_DATA.contact.email}
+LinkedIn:  ${PORTFOLIO_DATA.contact.linkedin}
+GitHub:    ${PORTFOLIO_DATA.contact.githubUrl}
+
+Educación: ${PORTFOLIO_DATA.contact.education}
+Idiomas:   ${PORTFOLIO_DATA.contact.languages}`;
+  }
+
+  // 4. Prompt MS-DOS
+  const promptInd = document.getElementById('dos-prompt-indicator');
+  if (promptInd) promptInd.innerText = PORTFOLIO_DATA.system.dosPrompt;
+}
+
+// Reloj digital PC & Nokia
 function updateClock() {
   const now = new Date();
   const h = String(now.getHours()).padStart(2, '0');
   const m = String(now.getMinutes()).padStart(2, '0');
-  document.getElementById('clock').innerText = `${h}:${m}`;
+  const clockEl = document.getElementById('clock');
+  if (clockEl) clockEl.innerText = `${h}:${m}`;
+  const nokiaClock = document.getElementById('nokia-clock');
+  if (nokiaClock) nokiaClock.innerText = `${h}:${m}`;
 }
 setInterval(updateClock, 1000);
 updateClock();
 
 // Menú inicio y fondo
 function toggleStartMenu() {
-  document.getElementById('start-menu').classList.toggle('active');
+  const sm = document.getElementById('start-menu');
+  if (sm) sm.classList.toggle('active');
 }
 document.addEventListener('click', (e) => {
   const wrapper = document.querySelector('.start-wrapper');
-  if (!wrapper.contains(e.target)) {
-    document.getElementById('start-menu').classList.remove('active');
+  if (wrapper && !wrapper.contains(e.target)) {
+    const sm = document.getElementById('start-menu');
+    if (sm) sm.classList.remove('active');
   }
 });
 
 let isBliss = true;
 function toggleWallpaper() {
   const wp = document.getElementById('desktop-wallpaper');
+  if (!wp) return;
   isBliss = !isBliss;
   wp.style.backgroundImage = isBliss
     ? "url('https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png')"
     : "none";
 }
 
-// Control de ventanas y estados
+// Control de ventanas y estados (PC)
 let highestZ = 30;
 
 const windowState = {
@@ -44,12 +136,14 @@ const windowState = {
 };
 
 function bringToFront(win) {
+  if (!win) return;
   highestZ++;
   win.style.zIndex = highestZ;
 }
 
 function openWindow(id) {
   const win = document.getElementById(id);
+  if (!win) return;
   win.style.display = 'flex';
   windowState[id] = 'open';
   bringToFront(win);
@@ -60,6 +154,7 @@ function openWindow(id) {
 
 function minimizeWindow(id) {
   const win = document.getElementById(id);
+  if (!win) return;
   win.style.display = 'none';
   windowState[id] = 'minimized';
   updateTaskbar();
@@ -67,6 +162,7 @@ function minimizeWindow(id) {
 
 function closeWindow(id) {
   const win = document.getElementById(id);
+  if (!win) return;
   win.style.display = 'none';
   windowState[id] = 'closed';
   updateTaskbar();
@@ -74,6 +170,7 @@ function closeWindow(id) {
 
 function handleTaskbarClick(id) {
   const win = document.getElementById(id);
+  if (!win) return;
   if (windowState[id] === 'minimized') {
     win.style.display = 'flex';
     windowState[id] = 'open';
@@ -92,6 +189,7 @@ function handleTaskbarClick(id) {
 // Drag & Drop de ventanas
 document.querySelectorAll('.win-popup').forEach(win => {
   const titleBar = win.querySelector('.title-bar');
+  if (!titleBar) return;
   win.addEventListener('mousedown', () => bringToFront(win));
 
   titleBar.addEventListener('mousedown', (e) => {
@@ -117,6 +215,7 @@ document.querySelectorAll('.resizer').forEach(resizer => {
   resizer.addEventListener('mousedown', (e) => {
     e.stopPropagation();
     const win = resizer.closest('.resizable-win');
+    if (!win) return;
     const startX = e.clientX;
     const startY = e.clientY;
     const startW = parseInt(document.defaultView.getComputedStyle(win).width, 10);
@@ -140,42 +239,46 @@ document.querySelectorAll('.resizer').forEach(resizer => {
 const eventsSplitter = document.getElementById('events-splitter');
 const eventDetailBox = document.getElementById('event-detail-text');
 
-eventsSplitter.addEventListener('mousedown', (e) => {
-  e.preventDefault();
-  const startY = e.clientY;
-  const startH = eventDetailBox.offsetHeight;
+if (eventsSplitter && eventDetailBox) {
+  eventsSplitter.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const startY = e.clientY;
+    const startH = eventDetailBox.offsetHeight;
 
-  function doDragH(e) {
-    const newH = startH - (e.clientY - startY);
-    if (newH >= 70 && newH <= 280) eventDetailBox.style.height = newH + 'px';
-  }
-  function stopDragH() {
-    document.removeEventListener('mousemove', doDragH);
-    document.removeEventListener('mouseup', stopDragH);
-  }
-  document.addEventListener('mousemove', doDragH);
-  document.addEventListener('mouseup', stopDragH);
-});
+    function doDragH(e) {
+      const newH = startH - (e.clientY - startY);
+      if (newH >= 70 && newH <= 280) eventDetailBox.style.height = newH + 'px';
+    }
+    function stopDragH() {
+      document.removeEventListener('mousemove', doDragH);
+      document.removeEventListener('mouseup', stopDragH);
+    }
+    document.addEventListener('mousemove', doDragH);
+    document.addEventListener('mouseup', stopDragH);
+  });
+}
 
 const explorerSplitter = document.getElementById('explorer-splitter');
 const explorerTreePane = document.getElementById('explorer-tree-pane');
 
-explorerSplitter.addEventListener('mousedown', (e) => {
-  e.preventDefault();
-  const startX = e.clientX;
-  const startW = explorerTreePane.offsetWidth;
+if (explorerSplitter && explorerTreePane) {
+  explorerSplitter.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = explorerTreePane.offsetWidth;
 
-  function doDragV(e) {
-    const newW = startW + (e.clientX - startX);
-    if (newW >= 180 && newW <= 480) explorerTreePane.style.width = newW + 'px';
-  }
-  function stopDragV() {
-    document.removeEventListener('mousemove', doDragV);
-    document.removeEventListener('mouseup', stopDragV);
-  }
-  document.addEventListener('mousemove', doDragV);
-  document.addEventListener('mouseup', stopDragV);
-});
+    function doDragV(e) {
+      const newW = startW + (e.clientX - startX);
+      if (newW >= 180 && newW <= 480) explorerTreePane.style.width = newW + 'px';
+    }
+    function stopDragV() {
+      document.removeEventListener('mousemove', doDragV);
+      document.removeEventListener('mouseup', stopDragV);
+    }
+    document.addEventListener('mousemove', doDragV);
+    document.addEventListener('mouseup', stopDragV);
+  });
+}
 
 // Barra de tareas
 const appCatalog = [
@@ -190,6 +293,7 @@ const appCatalog = [
 
 function updateTaskbar() {
   const container = document.getElementById('taskbar-tasks');
+  if (!container) return;
   container.innerHTML = '';
 
   appCatalog.forEach(app => {
@@ -238,11 +342,14 @@ document.querySelectorAll('.draggable-icon').forEach(icon => {
   });
 });
 
-document.getElementById('desktop').addEventListener('mousedown', (e) => {
-  if (e.target.id === 'desktop') {
-    document.querySelectorAll('.draggable-icon').forEach(i => i.classList.remove('selected'));
-  }
-});
+const desktopEl = document.getElementById('desktop');
+if (desktopEl) {
+  desktopEl.addEventListener('mousedown', (e) => {
+    if (e.target.id === 'desktop') {
+      document.querySelectorAll('.draggable-icon').forEach(i => i.classList.remove('selected'));
+    }
+  });
+}
 
 function autoArrangeIcons() {
   const icons = document.querySelectorAll('.draggable-icon');
@@ -278,11 +385,11 @@ document.addEventListener('contextmenu', (e) => {
 
   const btnOpen = document.getElementById('ctx-open');
   if (clickedIcon) {
-    btnOpen.style.display = 'block';
+    if (btnOpen) btnOpen.style.display = 'block';
     document.querySelectorAll('.draggable-icon').forEach(i => i.classList.remove('selected'));
     clickedIcon.classList.add('selected');
   } else {
-    btnOpen.style.display = 'none';
+    if (btnOpen) btnOpen.style.display = 'none';
   }
 
   let posX = e.clientX;
@@ -290,19 +397,21 @@ document.addEventListener('contextmenu', (e) => {
   if (posX + 190 > window.innerWidth) posX = window.innerWidth - 190;
   if (posY + 160 > window.innerHeight) posY = window.innerHeight - 160;
 
-  contextMenu.style.left = posX + 'px';
-  contextMenu.style.top = posY + 'px';
-  contextMenu.style.display = 'flex';
+  if (contextMenu) {
+    contextMenu.style.left = posX + 'px';
+    contextMenu.style.top = posY + 'px';
+    contextMenu.style.display = 'flex';
+  }
 });
 
 document.addEventListener('click', (e) => {
-  if (!contextMenu.contains(e.target)) {
+  if (contextMenu && !contextMenu.contains(e.target)) {
     hideContextMenu();
   }
 });
 
 function hideContextMenu() {
-  contextMenu.style.display = 'none';
+  if (contextMenu) contextMenu.style.display = 'none';
 }
 
 function ctxMenuAction(action) {
@@ -314,87 +423,19 @@ function ctxMenuAction(action) {
   }
 }
 
-// Visor de sucesos (Sin referencias a citas)
-const eventLogs = {
-  mc: "<strong>ID Suceso: 1004 - Mejora Continua IT (CL Grupo Industrial)</strong><br>" +
-      "Periodo: Octubre 2024 - Actualidad.<br>" +
-      "• Definición e implantación del marco integral de optimización IT.<br>" +
-      "• Estandarización de documentación técnica y repositorios en Confluence.<br>" +
-      "• Automatizaciones mediante PowerShell y agentes de IA (cruce de horas/tickets y pasarelas a ERP).",
-  infra: "<strong>ID Suceso: 1003 - Ingeniero de Infraestructuras TI (CL Grupo Industrial)</strong><br>" +
-         "Periodo: Abril 2012 - Octubre 2024.<br>" +
-         "• Administración de entorno para +3.000 usuarios, 15 sedes, +150 servidores y +200 máquinas virtuales en Nutanix/VMware.<br>" +
-         "• Diseño de Landing Zone corporativa en Azure (VPNs, redes híbridas, peering).<br>" +
-         "• Ciberseguridad: Fortinet, Check Point, CrowdStrike y DR satelital.",
-  dev: "<strong>ID Suceso: 1002 - Analista / Programador (CL Grupo Industrial)</strong><br>" +
-       "Periodo: Abril 2001 - Abril 2012.<br>" +
-       "• Desarrollo de aplicaciones internas en VB6, VB.NET, C# y ASP.NET.<br>" +
-       "• Modelado y optimización de bases de datos relacionales en Microsoft SQL Server.",
-  support: "<strong>ID Suceso: 1001 - Soporte Técnico (CL Grupo Industrial)</strong><br>" +
-           "Periodo: Abril 1999 - Abril 2001.<br>" +
-           "• Microinformática, redes locales y despliegue de puestos."
-};
-
+// Visor de sucesos detalle
 function showEventDetail(key) {
-  document.getElementById('event-detail-text').innerHTML = eventLogs[key];
+  const evt = PORTFOLIO_DATA.events.find(e => e.id === key);
+  const box = document.getElementById('event-detail-text');
+  if (box && evt) box.innerHTML = evt.detail;
 }
 
-// Explorador de archivos (Sin referencias a citas)
-const vfs = {
-  name: "C:\\PROYECTOS",
-  children: {
-    "Azure_Landing_Zone": {
-      type: "dir",
-      children: {
-        "arquitectura_red.txt": {
-          type: "file",
-          content: "PROYECTO: Landing Zone Corporativa en Azure\n\n- Arquitectura híbrida para migración de entornos on-premise a Cloud.\n- Redes virtuales, conectividad privada, peering y seguridad perimetral.\n- VPN P2S/S2S con autenticación basada en certificados."
-        },
-        "deploy.ps1": {
-          type: "file",
-          content: "# Script Provisioning\nConnect-AzAccount\nNew-AzVirtualNetwork -Name 'VNet-Hub-Prod' -ResourceGroupName 'RG-Core' -Location 'westeurope'"
-        }
-      }
-    },
-    "Resiliencia_Disaster_Recovery": {
-      type: "dir",
-      children: {
-        "plan_contingencia.txt": {
-          type: "file",
-          content: "DISASTER RECOVERY Y CONTINUIDAD OPERATIVA\n\n- Clústeres hiperconvergentes Nutanix y VMware (+200 VMs).\n- Contingencia de comunicaciones con failover automatizado a enlace satelital.\n- Política de respaldo 3-2-1-1-0 con Veeam Backup."
-        }
-      }
-    },
-    "Automatizacion_IA": {
-      type: "dir",
-      children: {
-        "agentes_workflows.txt": {
-          type: "file",
-          content: "AUTOMATIZACIÓN CON POWERSHELL E IA\n\n- Skill de IA para cruce inteligente de calendarios y tickets.\n- Workflows de aprobación automatizados con doble factor.\n- Pasarelas para conectar modelos LLM con ERPs corporativos."
-        }
-      }
-    },
-    "Seguridad_IAM": {
-      type: "dir",
-      children: {
-        "hardening_iso27001.txt": {
-          type: "file",
-          content: "SEGURIDAD DE IDENTIDADES (ISO 27001)\n\n- Acceso Condicional y Single Sign-On (SSO) en Microsoft Entra ID.\n- Hardening periódico de Active Directory.\n- Plan PAM en 2 fases y segmentación OT/IT."
-        }
-      }
-    },
-    "LEAME.txt": {
-      type: "file",
-      content: "Explorador de Proyectos de David Vellarino.\nRepositorio oficial GitHub: https://github.com/DaVeCor\nHaz doble clic en las carpetas para entrar y en los archivos para abrirlos."
-    }
-  }
-};
-
+// Explorador de archivos dinámico desde PORTFOLIO_DATA.vfs
 let currentFolderPath = [];
 let navHistory = [];
 
 function getFolderByPath(pathArr) {
-  let cur = vfs;
+  let cur = PORTFOLIO_DATA.vfs;
   for (const part of pathArr) {
     if (cur.children && cur.children[part]) cur = cur.children[part];
   }
@@ -421,25 +462,30 @@ function renderTree(container, folderObj, pathArr) {
 
 function initExplorerTree() {
   const treeRoot = document.getElementById('explorer-tree');
+  if (!treeRoot) return;
   treeRoot.innerHTML = '';
   const rootLi = document.createElement('li');
-  rootLi.innerHTML = `💽 <strong>C:\\PROYECTOS</strong>`;
+  rootLi.innerHTML = `💽 <strong>${PORTFOLIO_DATA.vfs.name}</strong>`;
   rootLi.onclick = () => navigateTo([]);
-  renderTree(rootLi, vfs, []);
+  renderTree(rootLi, PORTFOLIO_DATA.vfs, []);
   treeRoot.appendChild(rootLi);
 }
 
 function renderExplorerFiles() {
   const filesPanel = document.getElementById('explorer-files');
+  if (!filesPanel) return;
   filesPanel.innerHTML = '';
   const cur = getFolderByPath(currentFolderPath);
 
-  const fullPath = "C:\\PROYECTOS" + (currentFolderPath.length ? "\\" + currentFolderPath.join("\\") : "");
-  document.getElementById('address-bar').value = fullPath;
-  document.getElementById('explorer-title').innerText = "Explorando - " + fullPath;
+  const fullPath = PORTFOLIO_DATA.vfs.name + (currentFolderPath.length ? "\\" + currentFolderPath.join("\\") : "");
+  const addrBar = document.getElementById('address-bar');
+  if (addrBar) addrBar.value = fullPath;
+  const expTitle = document.getElementById('explorer-title');
+  if (expTitle) expTitle.innerText = "Explorando - " + fullPath;
 
   const entries = Object.keys(cur.children || {});
-  document.getElementById('status-items').innerText = `${entries.length} objeto(s)`;
+  const stItems = document.getElementById('status-items');
+  if (stItems) stItems.innerText = `${entries.length} objeto(s)`;
 
   entries.forEach(name => {
     const item = cur.children[name];
@@ -479,13 +525,12 @@ function navGoUp() {
 }
 
 function openFile(name, content) {
-  document.getElementById('notepad-title').innerText = name + " - Bloc de notas";
-  document.getElementById('notepad-content').value = content;
+  const npTitle = document.getElementById('notepad-title');
+  if (npTitle) npTitle.innerText = name + " - Bloc de notas";
+  const npContent = document.getElementById('notepad-content');
+  if (npContent) npContent.value = content;
   openWindow('win-notepad');
 }
-
-initExplorerTree();
-renderExplorerFiles();
 
 // Consola MS-DOS Prompt
 const hiddenInput = document.getElementById('dos-hidden-input');
@@ -494,188 +539,190 @@ const historyContainer = document.getElementById('history-container');
 const termContainer = document.getElementById('terminal-container');
 
 function focusTerminal() {
-  hiddenInput.focus();
+  if (hiddenInput) hiddenInput.focus();
 }
 
 function syncTerminalInput() {
-  typedText.innerText = hiddenInput.value;
+  if (typedText && hiddenInput) typedText.innerText = hiddenInput.value;
 }
 
-hiddenInput.addEventListener('input', syncTerminalInput);
-hiddenInput.addEventListener('keyup', syncTerminalInput);
+if (hiddenInput) {
+  hiddenInput.addEventListener('input', syncTerminalInput);
+  hiddenInput.addEventListener('keyup', syncTerminalInput);
 
-hiddenInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') {
-    const raw = hiddenInput.value;
-    const cmd = raw.trim().toLowerCase();
-    const parts = cmd.split(' ');
-    const baseCmd = parts[0];
+  hiddenInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const raw = hiddenInput.value;
+      const cmd = raw.trim().toLowerCase();
+      const parts = cmd.split(' ');
+      const baseCmd = parts[0];
 
-    const cmdDiv = document.createElement('div');
-    cmdDiv.className = 'dos-line';
-    cmdDiv.innerHTML = `<span style="font-weight:bold;">C:\\USERS\\DAVID&gt;</span> ${raw}`;
-    historyContainer.appendChild(cmdDiv);
+      const cmdDiv = document.createElement('div');
+      cmdDiv.className = 'dos-line';
+      cmdDiv.innerHTML = `<span style="font-weight:bold;">${PORTFOLIO_DATA.system.dosPrompt}</span> ${raw}`;
+      if (historyContainer) historyContainer.appendChild(cmdDiv);
 
-    const outDiv = document.createElement('div');
-    outDiv.className = 'dos-line';
+      const outDiv = document.createElement('div');
+      outDiv.className = 'dos-line';
 
-    switch (baseCmd) {
-      case 'help':
-        outDiv.innerText = "Comandos MS-DOS disponibles:\n" +
-                           "  DIR / LS       - Lista directorios y archivos de proyectos\n" +
-                           "  VER            - Muestra la versión del sistema operativo\n" +
-                           "  MEM            - Muestra el estado de la memoria disponible\n" +
-                           "  IPCONFIG       - Información de red y adaptadores\n" +
-                           "  PING <host>    - Comprueba la conectividad de red\n" +
-                           "  TREE           - Muestra la estructura de directorios en árbol\n" +
-                           "  GITHUB         - Abre el perfil de GitHub (DaVeCor)\n" +
-                           "  DATE / TIME    - Consulta la fecha y hora del sistema\n" +
-                           "  ECHO <texto>   - Muestra mensajes en pantalla\n" +
-                           "  ABOUT          - Abre propiedades del sistema\n" +
-                           "  EVENTS         - Abre el Visor de Sucesos (eventvwr.msc)\n" +
-                           "  EXPLORER       - Abre el explorador de archivos\n" +
-                           "  MINES          - Inicia el juego Buscaminas\n" +
-                           "  CONTACT        - Información de contacto\n" +
-                           "  CLS / CLEAR    - Limpia la pantalla de comandos\n" +
-                           "  EXIT           - Cierra la ventana de comandos\n" +
-                           "  REBOOT         - Reinicia el sistema";
-        break;
+      switch (baseCmd) {
+        case 'help':
+          outDiv.innerText = "Comandos MS-DOS disponibles:\n" +
+                             "  DIR / LS       - Lista directorios y archivos de proyectos\n" +
+                             "  VER            - Muestra la versión del sistema operativo\n" +
+                             "  MEM            - Muestra el estado de la memoria disponible\n" +
+                             "  IPCONFIG       - Información de red y adaptadores\n" +
+                             "  PING <host>    - Comprueba la conectividad de red\n" +
+                             "  TREE           - Muestra la estructura de directorios en árbol\n" +
+                             "  GITHUB         - Abre el perfil de GitHub\n" +
+                             "  DATE / TIME    - Consulta la fecha y hora del sistema\n" +
+                             "  ECHO <texto>   - Muestra mensajes en pantalla\n" +
+                             "  ABOUT          - Abre propiedades del sistema\n" +
+                             "  EVENTS         - Abre el Visor de Sucesos (eventvwr.msc)\n" +
+                             "  EXPLORER       - Abre el explorador de archivos\n" +
+                             "  MINES          - Inicia el juego Buscaminas\n" +
+                             "  CONTACT        - Información de contacto\n" +
+                             "  CLS / CLEAR    - Limpia la pantalla de comandos\n" +
+                             "  EXIT           - Cierra la ventana de comandos\n" +
+                             "  REBOOT         - Reinicia el sistema";
+          break;
 
-      case 'github':
-        outDiv.innerText = "Repositorio: https://github.com/DaVeCor";
-        window.open('https://github.com/DaVeCor', '_blank');
-        break;
+        case 'github':
+          outDiv.innerText = `Repositorio: ${PORTFOLIO_DATA.contact.githubUrl}`;
+          window.open(PORTFOLIO_DATA.contact.githubUrl, '_blank');
+          break;
 
-      case 'ver':
-        outDiv.innerText = "MS-DOS Version 6.22 (Portfolio Edition v1.2.1 - Build 2026.09)";
-        break;
+        case 'ver':
+          outDiv.innerText = `MS-DOS Version 6.22 (Portfolio Edition ${PORTFOLIO_DATA.system.version} - ${PORTFOLIO_DATA.system.build})`;
+          break;
 
-      case 'mem':
-        outDiv.innerText = "Tipo de memoria     Total       Usada       Libre\n" +
-                           "----------------  ---------   ---------   ---------\n" +
-                           "Convencional           640K        112K        528K\n" +
-                           "Extendida (XMS)     65,536K      14,200K     51,336K\n" +
-                           "----------------  ---------   ---------   ---------\n" +
-                           "Memoria total       66,176K      14,312K     51,864K\n\n" +
-                           "Programa de mayor tamaño ejecutable: 528K (540,672 bytes)";
-        break;
+        case 'mem':
+          outDiv.innerText = "Tipo de memoria     Total       Usada       Libre\n" +
+                             "----------------  ---------   ---------   ---------\n" +
+                             "Convencional           640K        112K        528K\n" +
+                             "Extendida (XMS)     65,536K      14,200K     51,336K\n" +
+                             "----------------  ---------   ---------   ---------\n" +
+                             "Memoria total       66,176K      14,312K     51,864K\n\n" +
+                             "Programa de mayor tamaño ejecutable: 528K (540,672 bytes)";
+          break;
 
-      case 'ipconfig':
-        outDiv.innerText = "Configuración IP de Windows\n\n" +
-                           "Adaptador Ethernet Realtek RTL8139:\n\n" +
-                           "   Sufijo de conexión específica DNS : red.local\n" +
-                           "   Dirección IPv4. . . . . . . . . . : 192.168.1.95\n" +
-                           "   Máscara de subred . . . . . . . . : 255.255.255.0\n" +
-                           "   Puerta de enlace predeterminada . : 192.168.1.1";
-        break;
+        case 'ipconfig':
+          outDiv.innerText = "Configuración IP de Windows\n\n" +
+                             "Adaptador Ethernet Realtek RTL8139:\n\n" +
+                             "   Sufijo de conexión específica DNS : red.local\n" +
+                             "   Dirección IPv4. . . . . . . . . . : 192.168.1.95\n" +
+                             "   Máscara de subred . . . . . . . . : 255.255.255.0\n" +
+                             "   Puerta de enlace predeterminada . : 192.168.1.1";
+          break;
 
-      case 'ping':
-        const target = parts[1] || '127.0.0.1';
-        outDiv.innerText = `Haciendo ping a ${target} con 32 bytes de datos:\n` +
-                           `Respuesta desde ${target}: bytes=32 tiempo=12ms TTL=128\n` +
-                           `Respuesta desde ${target}: bytes=32 tiempo=11ms TTL=128\n` +
-                           `Respuesta desde ${target}: bytes=32 tiempo=14ms TTL=128\n` +
-                           `Respuesta desde ${target}: bytes=32 tiempo=10ms TTL=128\n\n` +
-                           `Estadísticas de ping para ${target}:\n` +
-                           `    Paquetes: enviados = 4, recibidos = 4, perdidos = 0 (0% perdidos)`;
-        break;
+        case 'ping':
+          const target = parts[1] || '127.0.0.1';
+          outDiv.innerText = `Haciendo ping a ${target} con 32 bytes de datos:\n` +
+                             `Respuesta desde ${target}: bytes=32 tiempo=12ms TTL=128\n` +
+                             `Respuesta desde ${target}: bytes=32 tiempo=11ms TTL=128\n` +
+                             `Respuesta desde ${target}: bytes=32 tiempo=14ms TTL=128\n` +
+                             `Respuesta desde ${target}: bytes=32 tiempo=10ms TTL=128\n\n` +
+                             `Estadísticas de ping para ${target}:\n` +
+                             `    Paquetes: enviados = 4, recibidos = 4, perdidos = 0 (0% perdidos)`;
+          break;
 
-      case 'tree':
-        outDiv.innerText = "Estructura de carpetas para el volumen C:\n" +
-                           "C:\\PROYECTOS\n" +
-                           "├── AZURE_LANDING_ZONE\n" +
-                           "│   ├── ARQUITECTURA_RED.TXT\n" +
-                           "│   └── DEPLOY.PS1\n" +
-                           "├── RESILIENCIA_DISASTER_RECOVERY\n" +
-                           "│   └── PLAN_CONTINGENCIA.TXT\n" +
-                           "├── AUTOMATIZACION_IA\n" +
-                           "│   └── AGENTES_WORKFLOWS.TXT\n" +
-                           "├── SEGURIDAD_IAM\n" +
-                           "│   └── HARDENING_ISO27001.TXT\n" +
-                           "└── LEAME.TXT";
-        break;
+        case 'tree':
+          outDiv.innerText = `Estructura de carpetas para el volumen C:\n` +
+                             `${PORTFOLIO_DATA.vfs.name}\n` +
+                             `├── AZURE_LANDING_ZONE\n` +
+                             `│   ├── ARQUITECTURA_RED.TXT\n` +
+                             `│   └── DEPLOY.PS1\n` +
+                             `├── RESILIENCIA_DISASTER_RECOVERY\n` +
+                             `│   └── PLAN_CONTINGENCIA.TXT\n` +
+                             `├── AUTOMATIZACION_IA\n` +
+                             `│   └── AGENTES_WORKFLOWS.TXT\n` +
+                             `├── SEGURIDAD_IAM\n` +
+                             `│   └── HARDENING_ISO27001.TXT\n` +
+                             `└── LEAME.TXT`;
+          break;
 
-      case 'date':
-        outDiv.innerText = `La fecha actual es: ${new Date().toLocaleDateString('es-ES')}`;
-        break;
+        case 'date':
+          outDiv.innerText = `La fecha actual es: ${new Date().toLocaleDateString('es-ES')}`;
+          break;
 
-      case 'time':
-        outDiv.innerText = `La hora actual es: ${new Date().toLocaleTimeString('es-ES')}`;
-        break;
+        case 'time':
+          outDiv.innerText = `La hora actual es: ${new Date().toLocaleTimeString('es-ES')}`;
+          break;
 
-      case 'echo':
-        outDiv.innerText = raw.substring(5).trim();
-        break;
+        case 'echo':
+          outDiv.innerText = raw.substring(5).trim();
+          break;
 
-      case 'dir':
-      case 'ls':
-        outDiv.innerText = " El volumen en la unidad C es DAVID_OS\n" +
-                           " Directorio de C:\\PROYECTOS\n\n" +
-                           "AZURE_LANDING_ZONE       <DIR>    2024-10-01\n" +
-                           "RESILIENCIA_DISASTER_REC <DIR>    2023-05-12\n" +
-                           "AUTOMATIZACION_IA        <DIR>    2024-02-18\n" +
-                           "SEGURIDAD_IAM            <DIR>    2024-06-20\n" +
-                           "LEAME.TXT                1.024    2026-09-01\n" +
-                           "        5 archivo(s)          1.024 bytes\n" +
-                           "        0 libres        128.450.560 bytes libres";
-        break;
+        case 'dir':
+        case 'ls':
+          outDiv.innerText = ` El volumen en la unidad C es ${PORTFOLIO_DATA.system.osLabel}\n` +
+                             ` Directorio de ${PORTFOLIO_DATA.vfs.name}\n\n` +
+                             `AZURE_LANDING_ZONE       <DIR>    2024-10-01\n` +
+                             `RESILIENCIA_DISASTER_REC <DIR>    2023-05-12\n` +
+                             `AUTOMATIZACION_IA        <DIR>    2024-02-18\n` +
+                             `SEGURIDAD_IAM            <DIR>    2024-06-20\n` +
+                             `LEAME.TXT                1.024    2026-09-01\n` +
+                             `        5 archivo(s)          1.024 bytes\n` +
+                             `        0 libres        128.450.560 bytes libres`;
+          break;
 
-      case 'about':
-        openWindow('win-about');
-        outDiv.innerText = "Iniciando ABOUT.EXE...";
-        break;
+        case 'about':
+          openWindow('win-about');
+          outDiv.innerText = "Iniciando ABOUT.EXE...";
+          break;
 
-      case 'events':
-        openWindow('win-events');
-        outDiv.innerText = "Iniciando EVENTVWR.MSC...";
-        break;
+        case 'events':
+          openWindow('win-events');
+          outDiv.innerText = "Iniciando EVENTVWR.MSC...";
+          break;
 
-      case 'explorer':
-      case 'projects':
-        openWindow('win-explorer');
-        outDiv.innerText = "Iniciando EXPLORER.EXE...";
-        break;
+        case 'explorer':
+        case 'projects':
+          openWindow('win-explorer');
+          outDiv.innerText = "Iniciando EXPLORER.EXE...";
+          break;
 
-      case 'mines':
-        openWindow('win-mines');
-        outDiv.innerText = "Iniciando MINESWEEPER.EXE...";
-        break;
+        case 'mines':
+          openWindow('win-mines');
+          outDiv.innerText = "Iniciando MINESWEEPER.EXE...";
+          break;
 
-      case 'contact':
-        openWindow('win-contact');
-        outDiv.innerText = "Abriendo CONTACTO.TXT...";
-        break;
+        case 'contact':
+          openWindow('win-contact');
+          outDiv.innerText = "Abriendo CONTACTO.TXT...";
+          break;
 
-      case 'cls':
-      case 'clear':
-        historyContainer.innerHTML = '';
-        hiddenInput.value = '';
-        typedText.innerText = '';
-        return;
+        case 'cls':
+        case 'clear':
+          if (historyContainer) historyContainer.innerHTML = '';
+          hiddenInput.value = '';
+          if (typedText) typedText.innerText = '';
+          return;
 
-      case 'exit':
-        closeWindow('win-cli');
-        hiddenInput.value = '';
-        typedText.innerText = '';
-        return;
+        case 'exit':
+          closeWindow('win-cli');
+          hiddenInput.value = '';
+          if (typedText) typedText.innerText = '';
+          return;
 
-      case 'reboot':
-        location.reload();
-        return;
+        case 'reboot':
+          location.reload();
+          return;
 
-      case '':
-        break;
+        case '':
+          break;
 
-      default:
-        outDiv.innerText = `'${raw}' no se reconoce como un comando interno o externo, programa o archivo por lotes ejecutable. Escribe HELP.`;
+        default:
+          outDiv.innerText = `'${raw}' no se reconoce como un comando interno o externo, programa o archivo por lotes ejecutable. Escribe HELP.`;
+      }
+
+      if (cmd !== '' && historyContainer) historyContainer.appendChild(outDiv);
+      hiddenInput.value = '';
+      if (typedText) typedText.innerText = '';
+      if (termContainer) termContainer.scrollTop = termContainer.scrollHeight;
     }
-
-    if (cmd !== '') historyContainer.appendChild(outDiv);
-    hiddenInput.value = '';
-    typedText.innerText = '';
-    termContainer.scrollTop = termContainer.scrollHeight;
-  }
-});
+  });
+}
 
 // Buscaminas
 let minesInitialized = false;
@@ -693,11 +740,15 @@ function initMinesweeper() {
   clearInterval(mTimer);
   mSeconds = 0;
   mGameOver = false;
-  document.getElementById('mines-timer').innerText = '000';
-  document.getElementById('mines-flag-count').innerText = '010';
-  document.getElementById('mines-reset-btn').innerText = '🙂';
+  const timerEl = document.getElementById('mines-timer');
+  if (timerEl) timerEl.innerText = '000';
+  const flagEl = document.getElementById('mines-flag-count');
+  if (flagEl) flagEl.innerText = '010';
+  const faceBtn = document.getElementById('mines-reset-btn');
+  if (faceBtn) faceBtn.innerText = '🙂';
 
   const board = document.getElementById('mines-grid');
+  if (!board) return;
   board.innerHTML = '';
   mGrid = [];
 
@@ -749,7 +800,7 @@ function initMinesweeper() {
   mTimer = setInterval(() => {
     if (!mGameOver) {
       mSeconds++;
-      document.getElementById('mines-timer').innerText = String(Math.min(mSeconds, 999)).padStart(3, '0');
+      if (timerEl) timerEl.innerText = String(Math.min(mSeconds, 999)).padStart(3, '0');
     }
   }, 1000);
 }
@@ -762,16 +813,21 @@ function mReveal(r, c) {
   if (cell.isMine) {
     cell.revealed = true;
     const el = document.getElementById(`m-${r}-${c}`);
-    el.innerText = '💣';
-    el.style.backgroundColor = '#ff0000';
-    document.getElementById('mines-reset-btn').innerText = '😵';
+    if (el) {
+      el.innerText = '💣';
+      el.style.backgroundColor = '#ff0000';
+    }
+    const faceBtn = document.getElementById('mines-reset-btn');
+    if (faceBtn) faceBtn.innerText = '😵';
     mGameOver = true;
     clearInterval(mTimer);
     mGrid.flat().forEach(item => {
       if (item.isMine) {
         const d = document.getElementById(`m-${item.r}-${item.c}`);
-        d.innerText = '💣';
-        d.classList.add('revealed');
+        if (d) {
+          d.innerText = '💣';
+          d.classList.add('revealed');
+        }
       }
     });
     return;
@@ -784,23 +840,25 @@ function mReveal(r, c) {
     const [currR, currC] = queue.shift();
     const curCell = mGrid[currR][currC];
     const domCell = document.getElementById(`m-${currR}-${currC}`);
-    domCell.classList.add('revealed');
+    if (domCell) {
+      domCell.classList.add('revealed');
 
-    if (curCell.count > 0) {
-      domCell.innerText = curCell.count;
-      const palette = ['', '#0000ff', '#008000', '#ff0000', '#000080', '#800000', '#008080', '#000000', '#808080'];
-      domCell.style.color = palette[curCell.count];
-    } else {
-      domCell.innerText = '';
-      for (let dr = -1; dr <= 1; dr++) {
-        for (let dc = -1; dc <= 1; dc++) {
-          const nr = currR + dr;
-          const nc = currC + dc;
-          if (nr >= 0 && nr < M_ROWS && nc >= 0 && nc < M_COLS) {
-            const neighbor = mGrid[nr][nc];
-            if (!neighbor.revealed && !neighbor.flagged && !neighbor.isMine) {
-              neighbor.revealed = true;
-              queue.push([nr, nc]);
+      if (curCell.count > 0) {
+        domCell.innerText = curCell.count;
+        const palette = ['', '#0000ff', '#008000', '#ff0000', '#000080', '#800000', '#008080', '#000000', '#808080'];
+        domCell.style.color = palette[curCell.count];
+      } else {
+        domCell.innerText = '';
+        for (let dr = -1; dr <= 1; dr++) {
+          for (let dc = -1; dc <= 1; dc++) {
+            const nr = currR + dr;
+            const nc = currC + dc;
+            if (nr >= 0 && nr < M_ROWS && nc >= 0 && nc < M_COLS) {
+              const neighbor = mGrid[nr][nc];
+              if (!neighbor.revealed && !neighbor.flagged && !neighbor.isMine) {
+                neighbor.revealed = true;
+                queue.push([nr, nc]);
+              }
             }
           }
         }
@@ -817,11 +875,13 @@ function mToggleFlag(r, c) {
   if (cell.revealed) return;
 
   cell.flagged = !cell.flagged;
-  document.getElementById(`m-${r}-${c}`).innerText = cell.flagged ? '🚩' : '';
+  const el = document.getElementById(`m-${r}-${c}`);
+  if (el) el.innerText = cell.flagged ? '🚩' : '';
 
   let flagsUsed = 0;
   mGrid.flat().forEach(i => { if (i.flagged) flagsUsed++; });
-  document.getElementById('mines-flag-count').innerText = String(M_MINES - flagsUsed).padStart(3, '0');
+  const flagEl = document.getElementById('mines-flag-count');
+  if (flagEl) flagEl.innerText = String(M_MINES - flagsUsed).padStart(3, '0');
 }
 
 function checkMinesWin() {
@@ -833,14 +893,367 @@ function checkMinesWin() {
   if (safeLeft === 0) {
     mGameOver = true;
     clearInterval(mTimer);
-    document.getElementById('mines-reset-btn').innerText = '😎';
+    const faceBtn = document.getElementById('mines-reset-btn');
+    if (faceBtn) faceBtn.innerText = '😎';
 
     if (!bestRecord || mSeconds < bestRecord) {
       bestRecord = mSeconds;
-      document.getElementById('best-user-time').innerText = `${bestRecord} seg`;
+      const bestEl = document.getElementById('best-user-time');
+      if (bestEl) bestEl.innerText = `${bestRecord} seg`;
     }
 
-    document.getElementById('mines-win-message').innerText = `Has despejado el campo en ${mSeconds} segundos.`;
+    const winMsg = document.getElementById('mines-win-message');
+    if (winMsg) winMsg.innerText = `Has despejado el campo en ${mSeconds} segundos.`;
     openWindow('win-mines-win');
   }
 }
+
+// ========================================================
+// MOTOR NOKIA 3310 & JUEGO SNAKE
+// ========================================================
+const nokiaMenu = [
+  { id: 'about', label: '1. Mi Perfil' },
+  { id: 'projects', label: '2. Proyectos (SMS)' },
+  { id: 'events', label: '3. Historial/Sucesos' },
+  { id: 'contact', label: '4. Agenda Contacto' },
+  { id: 'snake', label: '5. 🐍 Juego: Snake' },
+  { id: 'pc', label: '6. 💻 Ver modo PC' }
+];
+
+let nokiaCurrentScreen = 'menu';
+let nokiaSelectedIndex = 0;
+let nokiaCurrentDetailId = null;
+
+let snakeInterval = null;
+let snake = [];
+let snakeDir = 'right';
+let snakeNextDir = 'right';
+let snakeFood = { x: 0, y: 0 };
+let snakeScore = 0;
+let snakeGameOver = false;
+const SNAKE_COLS = 22;
+const SNAKE_ROWS = 15;
+const SNAKE_CELL = 10;
+
+function startSnakeGame() {
+  clearInterval(snakeInterval);
+  snake = [
+    { x: 6, y: 7 },
+    { x: 5, y: 7 },
+    { x: 4, y: 7 }
+  ];
+  snakeDir = 'right';
+  snakeNextDir = 'right';
+  snakeScore = 0;
+  snakeGameOver = false;
+  spawnSnakeFood();
+
+  const title = document.getElementById('nokia-title');
+  if (title) title.innerText = 'SNAKE - PTS: 0';
+
+  drawSnake();
+  snakeInterval = setInterval(updateSnake, 115);
+}
+
+function spawnSnakeFood() {
+  let valid = false;
+  while (!valid) {
+    snakeFood.x = Math.floor(Math.random() * SNAKE_COLS);
+    snakeFood.y = Math.floor(Math.random() * SNAKE_ROWS);
+    valid = !snake.some(segment => segment.x === snakeFood.x && segment.y === snakeFood.y);
+  }
+}
+
+function updateSnake() {
+  if (snakeGameOver) return;
+
+  const head = { ...snake[0] };
+  snakeDir = snakeNextDir;
+
+  if (snakeDir === 'up') head.y--;
+  if (snakeDir === 'down') head.y++;
+  if (snakeDir === 'left') head.x--;
+  if (snakeDir === 'right') head.x++;
+
+  if (
+    head.x < 0 || head.x >= SNAKE_COLS ||
+    head.y < 0 || head.y >= SNAKE_ROWS ||
+    snake.some(seg => seg.x === head.x && seg.y === head.y)
+  ) {
+    snakeGameOver = true;
+    clearInterval(snakeInterval);
+    const title = document.getElementById('nokia-title');
+    if (title) title.innerText = 'FIN DEL JUEGO';
+    drawSnake();
+    return;
+  }
+
+  snake.unshift(head);
+
+  if (head.x === snakeFood.x && head.y === snakeFood.y) {
+    snakeScore += 10;
+    const title = document.getElementById('nokia-title');
+    if (title) title.innerText = `SNAKE - PTS: ${snakeScore}`;
+    spawnSnakeFood();
+  } else {
+    snake.pop();
+  }
+
+  drawSnake();
+}
+
+function drawSnake() {
+  const canvas = document.getElementById('snake-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#c4e538';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.strokeStyle = 'rgba(163, 203, 56, 0.4)';
+  ctx.lineWidth = 0.5;
+  for (let c = 0; c <= SNAKE_COLS; c++) {
+    ctx.beginPath();
+    ctx.moveTo(c * SNAKE_CELL, 0);
+    ctx.lineTo(c * SNAKE_CELL, canvas.height);
+    ctx.stroke();
+  }
+  for (let r = 0; r <= SNAKE_ROWS; r++) {
+    ctx.beginPath();
+    ctx.moveTo(0, r * SNAKE_CELL);
+    ctx.lineTo(canvas.width, r * SNAKE_CELL);
+    ctx.stroke();
+  }
+
+  ctx.fillStyle = '#1e272e';
+  ctx.fillRect(snakeFood.x * SNAKE_CELL + 2, snakeFood.y * SNAKE_CELL + 2, SNAKE_CELL - 4, SNAKE_CELL - 4);
+
+  snake.forEach((seg, idx) => {
+    ctx.fillStyle = '#1e272e';
+    ctx.fillRect(seg.x * SNAKE_CELL + 1, seg.y * SNAKE_CELL + 1, SNAKE_CELL - 2, SNAKE_CELL - 2);
+    if (idx === 0) {
+      ctx.fillStyle = '#c4e538';
+      ctx.fillRect(seg.x * SNAKE_CELL + 3, seg.y * SNAKE_CELL + 3, 2, 2);
+    }
+  });
+
+  if (snakeGameOver) {
+    ctx.fillStyle = 'rgba(196, 229, 56, 0.88)';
+    ctx.fillRect(15, 45, canvas.width - 30, 65);
+    ctx.strokeStyle = '#1e272e';
+    ctx.strokeRect(15, 45, canvas.width - 30, 65);
+
+    ctx.fillStyle = '#1e272e';
+    ctx.font = 'bold 13px Courier New, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('¡HAS CHOCADO!', canvas.width / 2, 68);
+    ctx.font = 'bold 11px Courier New, monospace';
+    ctx.fillText(`Puntos: ${snakeScore}`, canvas.width / 2, 84);
+    ctx.fillText('Pulsa — para jugar', canvas.width / 2, 99);
+  }
+}
+
+function renderNokiaScreen() {
+  const content = document.getElementById('nokia-content');
+  const title = document.getElementById('nokia-title');
+  const leftSoft = document.getElementById('nokia-left-softkey');
+  const rightSoft = document.getElementById('nokia-right-softkey');
+
+  if (!content || !title || !leftSoft || !rightSoft) return;
+
+  if (nokiaCurrentScreen === 'menu') {
+    clearInterval(snakeInterval);
+    title.innerText = 'MENÚ PRINCIPAL';
+    leftSoft.innerText = 'Selec.';
+    rightSoft.innerText = 'Atrás';
+
+    content.innerHTML = '';
+    nokiaMenu.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'lcd-menu-item' + (index === nokiaSelectedIndex ? ' active' : '');
+      div.innerText = item.label;
+      div.onclick = () => {
+        nokiaSelectedIndex = index;
+        nokiaPressSelect();
+      };
+      content.appendChild(div);
+    });
+  } else if (nokiaCurrentScreen === 'snake') {
+    leftSoft.innerText = 'Reiniciar';
+    rightSoft.innerText = 'Salir';
+    content.innerHTML = `
+      <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+        <canvas id="snake-canvas" width="${SNAKE_COLS * SNAKE_CELL}" height="${SNAKE_ROWS * SNAKE_CELL}"></canvas>
+      </div>
+    `;
+
+    const canvas = document.getElementById('snake-canvas');
+    if (canvas) {
+      let touchStartX = 0;
+      let touchStartY = 0;
+      canvas.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }, { passive: true });
+      canvas.addEventListener('touchend', (e) => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy)) {
+          if (dx > 20) nokiaNavRight();
+          else if (dx < -20) nokiaNavLeft();
+        } else {
+          if (dy > 20) nokiaNavDown();
+          else if (dy < -20) nokiaNavUp();
+        }
+      }, { passive: true });
+    }
+
+    startSnakeGame();
+  } else if (nokiaCurrentScreen === 'detail') {
+    clearInterval(snakeInterval);
+    leftSoft.innerText = 'Abrir';
+    rightSoft.innerText = 'Volver';
+
+    if (nokiaCurrentDetailId === 'about') {
+      title.innerText = 'PERFIL';
+      content.innerHTML = `
+        <div><strong>${PORTFOLIO_DATA.profile.fullName}</strong></div>
+        <div>${PORTFOLIO_DATA.profile.role}</div>
+        <br>
+        <div>${PORTFOLIO_DATA.profile.summary}</div>
+      `;
+    } else if (nokiaCurrentDetailId === 'projects') {
+      title.innerText = `BANDEJA SMS (${PORTFOLIO_DATA.mobileSms.length})`;
+      content.innerHTML = PORTFOLIO_DATA.mobileSms.map(sms => `
+        <div><strong>${sms.title}</strong><br>${sms.text}</div><br>
+      `).join('');
+    } else if (nokiaCurrentDetailId === 'events') {
+      title.innerText = 'HISTORIAL';
+      content.innerHTML = PORTFOLIO_DATA.events.map(evt => `
+        <div><strong>• ${evt.period}:</strong> ${evt.role} (${evt.company})</div><br>
+      `).join('');
+    } else if (nokiaCurrentDetailId === 'contact') {
+      title.innerText = 'AGENDA';
+      content.innerHTML = `
+        <div><strong>Email:</strong> ${PORTFOLIO_DATA.contact.email}</div>
+        <div><strong>Ubicación:</strong> ${PORTFOLIO_DATA.contact.location}</div>
+        <div><strong>GitHub:</strong> ${PORTFOLIO_DATA.contact.github}</div>
+        <div><strong>LinkedIn:</strong> ${PORTFOLIO_DATA.contact.linkedin}</div>
+      `;
+    }
+  }
+}
+
+// Navegación D-Pad
+function nokiaNavUp() {
+  if (nokiaCurrentScreen === 'menu') {
+    nokiaSelectedIndex = (nokiaSelectedIndex - 1 + nokiaMenu.length) % nokiaMenu.length;
+    renderNokiaScreen();
+  } else if (nokiaCurrentScreen === 'snake') {
+    if (snakeDir !== 'down') snakeNextDir = 'up';
+  } else {
+    const c = document.getElementById('nokia-content');
+    if (c) c.scrollTop -= 35;
+  }
+}
+
+function nokiaNavDown() {
+  if (nokiaCurrentScreen === 'menu') {
+    nokiaSelectedIndex = (nokiaSelectedIndex + 1) % nokiaMenu.length;
+    renderNokiaScreen();
+  } else if (nokiaCurrentScreen === 'snake') {
+    if (snakeDir !== 'up') snakeNextDir = 'down';
+  } else {
+    const c = document.getElementById('nokia-content');
+    if (c) c.scrollTop += 35;
+  }
+}
+
+function nokiaNavLeft() {
+  if (nokiaCurrentScreen === 'snake') {
+    if (snakeDir !== 'right') snakeNextDir = 'left';
+  }
+}
+
+function nokiaNavRight() {
+  if (nokiaCurrentScreen === 'snake') {
+    if (snakeDir !== 'left') snakeNextDir = 'right';
+  }
+}
+
+document.addEventListener('keydown', (e) => {
+  if (nokiaCurrentScreen === 'snake') {
+    if (e.key === 'ArrowUp' || e.key === 'w') nokiaNavUp();
+    if (e.key === 'ArrowDown' || e.key === 's') nokiaNavDown();
+    if (e.key === 'ArrowLeft' || e.key === 'a') nokiaNavLeft();
+    if (e.key === 'ArrowRight' || e.key === 'd') nokiaNavRight();
+  }
+});
+
+function nokiaPressSelect() {
+  if (nokiaCurrentScreen === 'menu') {
+    const selected = nokiaMenu[nokiaSelectedIndex];
+    if (selected.id === 'pc') {
+      switchToPCView();
+      return;
+    }
+    if (selected.id === 'snake') {
+      nokiaCurrentScreen = 'snake';
+      renderNokiaScreen();
+      return;
+    }
+    nokiaCurrentDetailId = selected.id;
+    nokiaCurrentScreen = 'detail';
+    renderNokiaScreen();
+  } else if (nokiaCurrentScreen === 'snake') {
+    startSnakeGame();
+  } else if (nokiaCurrentScreen === 'detail') {
+    if (nokiaCurrentDetailId === 'contact') {
+      window.open(PORTFOLIO_DATA.contact.githubUrl, '_blank');
+    }
+  }
+}
+
+function nokiaPressBack() {
+  if (nokiaCurrentScreen === 'snake' || nokiaCurrentScreen === 'detail') {
+    clearInterval(snakeInterval);
+    nokiaCurrentScreen = 'menu';
+    renderNokiaScreen();
+  }
+}
+
+function switchToNokiaView() {
+  const nokia = document.getElementById('nokia-container');
+  const wp = document.getElementById('desktop-wallpaper');
+  const dsk = document.getElementById('desktop');
+  const tb = document.getElementById('taskbar');
+
+  if (nokia) nokia.style.setProperty('display', 'flex', 'important');
+  if (wp) wp.style.setProperty('display', 'none', 'important');
+  if (dsk) dsk.style.setProperty('display', 'none', 'important');
+  if (tb) tb.style.setProperty('display', 'none', 'important');
+  document.querySelectorAll('.win-popup').forEach(w => w.style.setProperty('display', 'none', 'important'));
+  renderNokiaScreen();
+}
+
+function switchToPCView() {
+  const nokia = document.getElementById('nokia-container');
+  const wp = document.getElementById('desktop-wallpaper');
+  const dsk = document.getElementById('desktop');
+  const tb = document.getElementById('taskbar');
+
+  if (nokia) nokia.style.removeProperty('display');
+  if (wp) wp.style.removeProperty('display');
+  if (dsk) dsk.style.removeProperty('display');
+  if (tb) tb.style.removeProperty('display');
+  document.querySelectorAll('.win-popup').forEach(w => w.style.removeProperty('display'));
+  openWindow('win-about');
+}
+
+// Arranque inicial
+document.addEventListener('DOMContentLoaded', () => {
+  initPortfolioContent();
+  initExplorerTree();
+  renderExplorerFiles();
+  renderNokiaScreen();
+});
